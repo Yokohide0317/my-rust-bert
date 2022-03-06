@@ -20,6 +20,7 @@ fn main() -> anyhow::Result<()> {
     //    Set-up model
     let generate_config = TextGenerationConfig {
         model_type: ModelType::GPT2,
+se rust_bert::resources::{Resource, download_resource, LocalResource};
         max_length: 50,
         do_sample: false,
         num_beams: 1,
