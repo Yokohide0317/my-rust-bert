@@ -15,32 +15,40 @@ extern crate anyhow;
 use rust_bert::pipelines::common::ModelType;
 use rust_bert::pipelines::text_generation::{TextGenerationConfig, TextGenerationModel};
 
+fn input() -> String {
+    println!("Input: ");
+    let mut text = String::new();
+    std::io::stdin().read_line(&mut text).unwrap();
+    return text.trim().to_string();
+}
+
 fn main() -> anyhow::Result<()> {
-    let start = std::time::Instant::now();
-    //    Set-up model
+        //    Set-up model
     let generate_config = TextGenerationConfig {
         model_type: ModelType::GPT2,
-se rust_bert::resources::{Resource, download_resource, LocalResource};
         max_length: 50,
         do_sample: false,
         num_beams: 1,
         temperature: 1.0,
         num_return_sequences: 1,
+        repetition_penalty: 1.6,
         ..Default::default()
     };
     let model = TextGenerationModel::new(generate_config)?;
 
-    let input_context = "rust-bert is";
-    // let second_input_context = "The cat was";
+    //let input_context = "rust-bert is";
+    loop {
+        let input_context = input();
+        let start = std::time::Instant::now();
+        println!("Generating...");
+        let output = model.generate(&[input_context], None);
 
-    println!("Generating...");
-    let output = model.generate(&[input_context], None);
-
-    for sentence in output {
-        println!("{:?}", sentence);
-    }
-    let stop = std::time::Instant::now();
-    println!("Time: {:?}", stop.duration_since(start));
-
-    Ok(())
+        for sentence in output {
+            println!("{:?}", sentence);
+        }
+        let stop = std::time::Instant::now();
+        println!("Time: {:?}", stop.duration_since(start));
+        println!("\n")
+    };
+    return Ok(());
 }

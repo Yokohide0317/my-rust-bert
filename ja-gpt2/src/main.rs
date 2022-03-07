@@ -9,16 +9,20 @@ fn main() -> anyhow::Result<()> {
     let model_resource = Resource::Remote(RemoteResource::from_pretrained((
         "ja-bert",
         //"https://huggingface.co/jweb/japanese-soseki-gpt2-1b/resolve/main/rust_model.ot".into(),
-        "https://huggingface.co/Narsil/gpt2/blob/main/rust_model.ot",
+        //"https://huggingface.co/Narsil/gpt2/blob/main/rust_model.ot",
+        "https://huggingface.co/gpt2/blob/main/rust_model.ot",
     )));
     let config_resource = Resource::Remote(RemoteResource::new(
                //"https://huggingface.co/jweb/japanese-soseki-gpt2-1b/resolve/main/config.json".into(),
-        "https://huggingface.co/Narsil/gpt2/blob/main/config.json",
+        //"https://huggingface.co/Narsil/gpt2/blob/main/config.json",
+        "https://huggingface.co/gpt2/blob/main/config.json",
         "configs",
     ));
     let vocab_resource = Resource::Remote(RemoteResource::new( 
                 //"https://huggingface.co/jweb/japanese-soseki-gpt2-1b/resolve/main/spiece.model".into(),
-        "https://huggingface.co/Narsil/gpt2/blob/main/vocab.json",
+        //"https://huggingface.co/Narsil/gpt2/blob/main/vocab.json",
+        //"https://huggingface.co/gpt2/blob/main/vocab.json",
+        "https://huggingface.co/gpt2/blob/main/merges.txt",
         "vocab",
     ));
     let merges_resource = vocab_resource.clone();    
