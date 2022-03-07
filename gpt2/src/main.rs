@@ -15,6 +15,7 @@ extern crate anyhow;
 use rust_bert::pipelines::common::ModelType;
 use rust_bert::pipelines::text_generation::{TextGenerationConfig, TextGenerationModel};
 
+// コマンドラインから
 fn input() -> String {
     println!("Input: ");
     let mut text = String::new();
@@ -23,7 +24,8 @@ fn input() -> String {
 }
 
 fn main() -> anyhow::Result<()> {
-        //    Set-up model
+    //    Set-up model
+    println!("Loading model...");
     let generate_config = TextGenerationConfig {
         model_type: ModelType::GPT2,
         max_length: 50,
@@ -35,19 +37,23 @@ fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
     let model = TextGenerationModel::new(generate_config)?;
-
-    //let input_context = "rust-bert is";
+    
+    println!("Ready to run. Type QUIT to escape.\n\n");
     loop {
         let input_context = input();
+        // QUITで終了できるように
+        if input_context == "QUIT" { break; }
+        // 時間測定スタート
         let start = std::time::Instant::now();
         println!("Generating...");
         let output = model.generate(&[input_context], None);
 
         for sentence in output {
-            println!("{:?}", sentence);
+            println!("「{:?}」", sentence);
         }
+        // 時間測定。差分を取る
         let stop = std::time::Instant::now();
-        println!("Time: {:?}", stop.duration_since(start));
+        println!("<Time: {:.3}s>", (stop.duration_since(start).as_millis() as f64) / 1000.0);
         println!("\n")
     };
     return Ok(());
