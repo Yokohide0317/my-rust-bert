@@ -1,5 +1,5 @@
 [package]
-name = "ja-gpt2"
+name = "question_answering"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,3 +9,4 @@ edition = "2021"
 rust-bert = "0.17.0"
 anyhow = "1.0.55"
 tch = "0.6.1"
+rust_tokenizers = "7.0.1"

@@ -54,7 +54,7 @@ fn main() -> anyhow::Result<()> {
         // 時間測定。差分を取る
         let stop = std::time::Instant::now();
         println!("<Time: {:.3}s>", (stop.duration_since(start).as_millis() as f64) / 1000.0);
-        println!("\n")
+        println!("\n");
     };
     return Ok(());
 }
