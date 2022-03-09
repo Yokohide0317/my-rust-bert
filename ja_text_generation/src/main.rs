@@ -3,6 +3,8 @@ use rust_bert::resources::LocalResource;
 use rust_bert::resources::Resource::Local;
 use rust_bert::pipelines::text_generation::{ TextGenerationConfig, TextGenerationModel };
 use rust_bert::resources::Resource;
+//use rust_tokenizers::tokenizer::Gpt2Tokenizer;
+use rust_tokenizers::tokenizer::{SentencePieceTokenizer, Tokenizer};
 
 fn input() -> String {
     let mut text = String::new();
@@ -12,7 +14,7 @@ fn input() -> String {
 }
 
 fn get_resource(item: String) -> Resource {
-    let mut model_dir = PathBuf::from("/home/yokohide/workspace/rust/gpt2/");
+    let mut model_dir = PathBuf::from("/home/yokohide/workspace/rust/japanese-gpt2-small/");
     model_dir.push(&item);
     println!("{:?}", model_dir);
     let resource = Local(LocalResource{
@@ -22,11 +24,14 @@ fn get_resource(item: String) -> Resource {
 }
 
 fn main() -> anyhow::Result<()> {
-
+    /*
     let model_resource = get_resource(String::from("rust_model.ot"));
-    let vocab_resource = get_resource(String::from("vocab.json")); 
+    let vocab_resource = get_resource(String::from("spiece.model")); 
     let config_resource = get_resource(String::from("config.json"));
-    let merges_resource = get_resource(String::from("merges.txt"));
+    */
+    let lower_case = false;
+    let tokenizer = SentencePieceTokenizer::from_file("/home/yokohide/workspace/rust/japanese-gpt2-small/spiece.model", lower_case).unwrap();
+    //let merges_resource = get_resource(String::from("merges.txt"));
 
     // configの作成
     let generate_config = TextGenerationConfig {     
@@ -34,7 +39,7 @@ fn main() -> anyhow::Result<()> {
         model_resource,
         config_resource,
         vocab_resource,
-        merges_resource,
+        //merges_resource,
 
         // パラメーター調整
         repetition_penalty: 1.6,
