@@ -15,6 +15,12 @@ fn get_path(item: String) -> PathBuf {
     return resource_dir;
 }
 
+fn input(display: String) -> String {
+    let mut text = String::new();
+    println!("{}: ", display);
+    std::io::stdin().read_line(&mut text).unwrap();
+    return text.trim().to_string();
+}
 
 fn main() -> anyhow::Result<()> {
     //    Resources paths
@@ -33,7 +39,8 @@ fn main() -> anyhow::Result<()> {
     vs.load(model_path)?;
 
     //    Define input
-    let inp = String::from("明日は*に行きたい。");
+    //let inp = String::from("明日は*に行きたい。");
+    let inp = input(String::from("Input: "));
     let mut mask_index = 0;
     for (i, m) in inp.chars().enumerate() {
         if m == '*' {
@@ -41,11 +48,12 @@ fn main() -> anyhow::Result<()> {
         }
     }
     let inp = inp.replace("*", "[MASK]");
+    println!("{}", inp);
 
     let input = [inp,];
-
     
-    let tokenized_input = tokenizer.encode_list(&input, 128, &TruncationStrategy::LongestFirst, 0);
+    let owakatied = &tokenizer.tokenize_list(&input)[0];
+    let tokenized_input = tokenizer.encode_list(&owakatied, 128, &TruncationStrategy::LongestFirst, 0);
 
     let max_len = tokenized_input
         .iter()
