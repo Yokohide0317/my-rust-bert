@@ -17,7 +17,7 @@ fn get_path(item: String) -> PathBuf {
 
 fn input(display: String) -> String {
     let mut text = String::new();
-    println!("{}: ", display);
+    println!("{}", display);
     std::io::stdin().read_line(&mut text).unwrap();
     return text.trim().to_string();
 }
@@ -32,28 +32,31 @@ fn main() -> anyhow::Result<()> {
     //    Set-up masked LM model
     let device = Device::Cpu;
     let mut vs = nn::VarStore::new(device);
-    let tokenizer: BertTokenizer =
-        BertTokenizer::from_file(vocab_path.to_str().unwrap(), false, false)?;
     let config = BertConfig::from_file(config_path);
     let bert_model = BertForMaskedLM::new(&vs.root(), &config);
     vs.load(model_path)?;
 
     //    Define input
     //let inp = String::from("明日は*に行きたい。");
+
     let inp = input(String::from("Input: "));
-    let mut mask_index = 0;
-    for (i, m) in inp.chars().enumerate() {
-        if m == '*' {
+    let inp = inp.replace("*", "[MASK]");
+    let input = [inp];
+
+    let tokenizer: BertTokenizer =
+        BertTokenizer::from_file(vocab_path.to_str().unwrap(), false, false).unwrap();
+    
+    let owakatied = &tokenizer.tokenize_list(&input);
+    
+    let tokenized_input = tokenizer.encode_list(&input, 128, &TruncationStrategy::LongestFirst, 0);
+
+    let mut mask_index: usize = 0;
+    for (i, m) in owakatied[0].iter().enumerate() {
+        if m == "[MASK]" {    
             mask_index = i+1;
+            break;
         }
     }
-    let inp = inp.replace("*", "[MASK]");
-    println!("{}", inp);
-
-    let input = [inp,];
-    
-    let owakatied = &tokenizer.tokenize_list(&input)[0];
-    let tokenized_input = tokenizer.encode_list(&owakatied, 128, &TruncationStrategy::LongestFirst, 0);
 
     let max_len = tokenized_input
         .iter()
@@ -84,17 +87,17 @@ fn main() -> anyhow::Result<()> {
             false,
         )
     });
-
+    println!("MASK: {}", mask_index);
     //    Print masked tokens
     let index_1 = model_output
         .prediction_scores
         .get(0)
-        .get(mask_index.try_into().unwrap())
+        .get(mask_index as i64)
         .argmax(0, false);
-
-    let word_1 = tokenizer.vocab().id_to_token(&index_1.int64_value(&[]));
-
-    println!("{}", word_1); // Outputs "person" : "Looks like one [person] is missing"
+        
+    let word = tokenizer.vocab().id_to_token(&index_1.int64_value(&[]));
+    println!("Inp: {:?}", &input);
+    println!("{}", word);
 
     Ok(())
 }
